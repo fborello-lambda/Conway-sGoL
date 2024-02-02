@@ -30,6 +30,7 @@ async fn main() {
         draw_text("IT WORKS!", 20.0, 20.0, 30.0, DARKGRAY);
 
         draw_text("touch the screen!", 20.0, 20.0, 20.0, DARKGRAY);
+        println!("hola");
         next_frame().await
     }
 }
