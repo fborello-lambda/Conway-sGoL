@@ -1,3 +1,5 @@
+pub mod logic;
+
 use macroquad::prelude::*;
 fn window_conf() -> Conf {
     Conf {
