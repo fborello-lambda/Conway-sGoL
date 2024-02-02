@@ -13,7 +13,7 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn update(&mut self) {
+    pub fn update(&mut self) -> &Self {
         for i in 0..self.height {
             for j in 0..self.width {
                 match self.grid[i][j].live_neighb {
@@ -25,9 +25,10 @@ impl Grid {
             }
         }
         self.update_neighbours();
+        self
     }
 
-    pub fn update_neighbours(&mut self) {
+    pub fn update_neighbours(&mut self) -> &Self {
         for i in 0..self.height {
             for j in 0..self.width {
                 let mut cant = 0;
@@ -39,9 +40,10 @@ impl Grid {
                 self.grid[i][j].live_neighb = cant;
             }
         }
+        self
     }
 
-    pub fn neighbours(i: usize, j: usize, width: usize, height: usize) -> Vec<(usize, usize)> {
+    fn neighbours(i: usize, j: usize, width: usize, height: usize) -> Vec<(usize, usize)> {
         let mut res = Vec::new();
         for k in 0..=2 {
             for l in 0..=2 {
@@ -102,12 +104,10 @@ mod tests {
         g.grid[2][1].live_neighb = 1;
         g.grid[2][3].alive = true;
         g.grid[2][3].live_neighb = 1;
-        g.update_neighbours();
+        g.update_neighbours().show();
 
-        g.show();
         loop {
-            g.update();
-            g.show();
+            g.update().show();
             println!("##################");
             thread::sleep_ms(1000);
         }
