@@ -2,14 +2,14 @@
 #[warn(unused_variables)]
 #[derive(Clone)]
 pub struct Cell {
-    alive: bool,
+    pub alive: bool,
     live_neighb: usize,
 }
 
 pub struct Grid {
     pub width: usize,
     pub height: usize,
-    grid: Vec<Vec<Cell>>,
+    pub grid: Vec<Vec<Cell>>,
 }
 
 impl Grid {
@@ -60,6 +60,15 @@ impl Grid {
                 self.grid[x][y].live_neighb -= 1;
             }
         }
+        self
+    }
+
+    pub fn change_cell(&mut self, i: usize, j: usize) -> &Self {
+        if self.grid[i][j].alive {
+            self.kill_cell(i, j);
+            return self;
+        }
+        self.new_cell(i, j);
         self
     }
 
