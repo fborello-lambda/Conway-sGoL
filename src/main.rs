@@ -2,6 +2,8 @@ pub mod logic;
 
 use logic::Grid;
 use macroquad::prelude::*;
+use macroquad::ui;
+
 fn window_conf() -> Conf {
     Conf {
         window_title: "Window Conf".to_owned(),
@@ -27,6 +29,15 @@ async fn main() {
     let mut sq_size;
     loop {
         clear_background(LIGHTGRAY);
+
+        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 10.), "START") {
+            running = !running;
+        }
+        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 40.), "RESET") {
+            // reset grid state
+            todo!()
+        }
+
         //Window settings
 
         let a = (screen_width() - 20.) / SQUARES_X as f32;
