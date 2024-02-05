@@ -20,27 +20,40 @@ fn window_conf() -> Conf {
     }
 }
 
-const SQUARES_X: usize = 50;
-const SQUARES_Y: usize = 25;
-
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut running: bool = false;
+    let mut SQUARES_X: usize = 50;
+    let mut SQUARES_Y: usize = 25;
     let mut game = Grid::new(SQUARES_X, SQUARES_Y);
     let mut sq_size;
     let mut now = Instant::now();
     let mut clicked: bool = false;
     let mut click = Instant::now();
+
     loop {
         clear_background(LIGHTGRAY);
 
+        /*if is_key_pressed(KeyCode::Up) {
+            SQUARES_Y += 1;
+        }
+        if is_key_pressed(KeyCode::Down) {
+            SQUARES_Y -= 1;
+        }
+        if is_key_pressed(KeyCode::Right) {
+            SQUARES_X += 1;
+        }
+        if is_key_pressed(KeyCode::Left) {
+            SQUARES_X -= 1;
+        }
+        */
         if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 10.), "START")
             || is_key_pressed(KeyCode::Space)
             || is_key_pressed(KeyCode::S)
         {
             running = !running;
         }
-        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 40.), "RESET")
+        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 30.), "RESET")
             || is_key_pressed(KeyCode::R)
         {
             // reset grid state
