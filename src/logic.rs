@@ -32,7 +32,7 @@ impl Grid {
         for i in 0..self.height {
             for j in 0..self.width {
                 let mut cant = 0;
-                for (x, y) in Self::neighbours(i, j, self.width, self.height) {
+                for (x, y) in self.neighbours(i, j) {
                     if self.grid[x][y].alive {
                         cant += 1;
                     }
@@ -43,13 +43,38 @@ impl Grid {
         self
     }
 
-    fn neighbours(i: usize, j: usize, width: usize, height: usize) -> Vec<(usize, usize)> {
+    fn new_cell(&mut self, i: usize, j: usize) -> &Self {
+        if !self.grid[i][j].alive {
+            self.grid[i][j].alive = true;
+            for (x, y) in self.neighbours(i, j) {
+                self.grid[x][y].live_neighb += 1;
+            }
+        }
+        self
+    }
+
+    fn kill_cell(&mut self, i: usize, j: usize) -> &Self {
+        if self.grid[i][j].alive {
+            self.grid[i][j].alive = false;
+            for (x, y) in self.neighbours(i, j) {
+                self.grid[x][y].live_neighb -= 1;
+            }
+        }
+        self
+    }
+
+    fn neighbours(&self, i: usize, j: usize) -> Vec<(usize, usize)> {
         let mut res = Vec::new();
         for k in 0..=2 {
             for l in 0..=2 {
                 let x: i32 = (i + k) as i32 - 1;
                 let y: i32 = (j + l) as i32 - 1;
-                if x >= 0 && x < height as i32 && y < width as i32 && y >= 0 && (k != 1 || l != 1) {
+                if x >= 0
+                    && x < self.height as i32
+                    && y < self.width as i32
+                    && y >= 0
+                    && (k != 1 || l != 1)
+                {
                     res.push((i + k - 1, j + l - 1));
                 }
             }
@@ -91,7 +116,7 @@ mod tests {
 
     #[test]
     fn test_neigh() {
-        println!("{:?}", Grid::neighbours(4, 4, 5, 5));
+        //println!("{:?}", Grid::neighbours(4, 4, 5, 5));
     }
 
     use std::{thread, time::Duration};
