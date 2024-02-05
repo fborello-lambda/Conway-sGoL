@@ -1,4 +1,4 @@
-prog :=GoL
+prog := CONWAY-SGOL
 
 debug ?=
 
