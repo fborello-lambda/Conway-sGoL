@@ -1,5 +1,6 @@
 pub mod logic;
 
+use logic::Grid;
 use macroquad::prelude::*;
 fn window_conf() -> Conf {
     Conf {
@@ -16,47 +17,61 @@ fn window_conf() -> Conf {
     }
 }
 
-const SQUARES: i16 = 32;
+const SQUARES_X: usize = 100;
+const SQUARES_Y: usize = 50;
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    let mut running: bool = false;
+    let mut game = Grid::new(SQUARES_X, SQUARES_Y);
+    let mut sq_size;
     loop {
         clear_background(LIGHTGRAY);
+        //Window settings
 
-        let offset_x = 20.;
-        let offset_y = 50.;
-        let sq_size = (screen_width() - offset_x * 2.) / SQUARES as f32;
+        let a = (screen_width() - 20.) / SQUARES_X as f32;
+        let b = (screen_height() - 60.) / SQUARES_Y as f32;
+        sq_size = a.min(b);
 
+        let offset_x = (screen_width() - 20. - sq_size * SQUARES_X as f32) / 2. + 10.;
+        let offset_y_up = (screen_height() - 60. - sq_size * SQUARES_Y as f32) / 2. + 50.;
+        let offset_y_down = (screen_height() - 60. - sq_size * SQUARES_Y as f32) / 2. + 10.;
+
+        //Draw background
         draw_rectangle(
             offset_x,
-            offset_y,
-            screen_width() - 20.,
-            screen_height() - 20.,
+            offset_y_up,
+            screen_width() - offset_x * 2.,
+            screen_height() - offset_y_down - offset_y_up,
             WHITE,
         );
 
-        for i in 1..SQUARES {
+        for i in 1..SQUARES_Y {
             draw_line(
                 offset_x,
-                offset_y + sq_size * i as f32,
+                offset_y_up + sq_size * i as f32,
                 screen_width() - offset_x,
-                offset_y + sq_size * i as f32,
+                offset_y_up + sq_size * i as f32,
                 2.,
                 LIGHTGRAY,
             );
+        }
+        for i in 1..SQUARES_X {
             draw_line(
                 offset_x + sq_size * i as f32,
-                offset_y,
+                offset_y_up,
                 offset_x + sq_size * i as f32,
-                screen_height() - offset_y,
+                screen_height() - offset_y_down,
                 2.,
                 LIGHTGRAY,
             );
         }
 
+        //Draw grid
+
         draw_rectangle(
             offset_x + 0. * sq_size,
-            offset_y + 0. * sq_size,
+            offset_y_up + 0. * sq_size,
             sq_size,
             sq_size,
             DARKGREEN,
