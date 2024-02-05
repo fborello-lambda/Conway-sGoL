@@ -1,11 +1,11 @@
 #[warn(dead_code)]
 #[warn(unused_variables)]
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Cell {
     pub alive: bool,
     live_neighb: usize,
 }
-
+#[derive(Clone, PartialEq, Debug)]
 pub struct Grid {
     pub width: usize,
     pub height: usize,
@@ -125,25 +125,38 @@ mod tests {
 
     #[test]
     fn test_neigh() {
-        //println!("{:?}", Grid::neighbours(4, 4, 5, 5));
+        let g = Grid::new(5, 5);
+        assert_eq!(g.neighbours(4, 4), vec![(3, 3), (3, 4), (4, 3)]);
+        println!("{:?}", g.neighbours(4, 4));
     }
 
-    use std::{thread, time::Duration};
     #[test]
-    fn test_always() {
+    fn test_worm() {
         let mut g = Grid::new(5, 5);
         g.grid[2][2].alive = true;
-        g.grid[2][2].live_neighb = 2;
         g.grid[2][1].alive = true;
-        g.grid[2][1].live_neighb = 1;
         g.grid[2][3].alive = true;
-        g.grid[2][3].live_neighb = 1;
-        g.update_neighbours().show();
-
-        loop {
-            g.update().show();
-            println!("##################");
-            thread::sleep(Duration::from_secs(1));
-        }
+        g.update_neighbours();
+        /*g
+        _____
+        _____
+        _***_
+        _____
+        _____
+         */
+        let mut g2 = Grid::new(5, 5);
+        g2.grid[1][2].alive = true;
+        g2.grid[2][2].alive = true;
+        g2.grid[3][2].alive = true;
+        g2.update_neighbours();
+        /*
+        _____
+        __*__
+        __*__
+        __*__
+        _____
+         */
+        g.update();
+        assert_eq!(g2, g);
     }
 }
