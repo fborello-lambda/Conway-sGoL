@@ -94,7 +94,7 @@ mod tests {
         println!("{:?}", Grid::neighbours(4, 4, 5, 5));
     }
 
-    use std::thread;
+    use std::{thread, time::Duration};
     #[test]
     fn test_always() {
         let mut g = Grid::new(5, 5);
@@ -109,7 +109,7 @@ mod tests {
         loop {
             g.update().show();
             println!("##################");
-            thread::sleep_ms(1000);
+            thread::sleep(Duration::from_secs(1));
         }
     }
 }
