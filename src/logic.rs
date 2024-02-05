@@ -7,8 +7,8 @@ pub struct Cell {
 }
 
 pub struct Grid {
-    width: usize,
-    height: usize,
+    pub width: usize,
+    pub height: usize,
     grid: Vec<Vec<Cell>>,
 }
 
