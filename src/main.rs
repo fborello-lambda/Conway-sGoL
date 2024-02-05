@@ -4,7 +4,7 @@ use macroquad::prelude::*;
 fn window_conf() -> Conf {
     Conf {
         window_title: "Window Conf".to_owned(),
-        window_width: 1368,
+        window_width: 768,
         window_height: 768,
         fullscreen: false,
         #[cfg(feature = "metal")]
@@ -16,23 +16,57 @@ fn window_conf() -> Conf {
     }
 }
 
+const SQUARES: i16 = 32;
+
 #[macroquad::main(window_conf)]
 async fn main() {
     loop {
         clear_background(LIGHTGRAY);
+
+        let offset_x = 20.;
+        let offset_y = 50.;
+        let sq_size = (screen_width() - offset_x * 2.) / SQUARES as f32;
+
+        draw_rectangle(
+            offset_x,
+            offset_y,
+            screen_width() - 20.,
+            screen_height() - 20.,
+            WHITE,
+        );
+
+        for i in 1..SQUARES {
+            draw_line(
+                offset_x,
+                offset_y + sq_size * i as f32,
+                screen_width() - offset_x,
+                offset_y + sq_size * i as f32,
+                2.,
+                LIGHTGRAY,
+            );
+            draw_line(
+                offset_x + sq_size * i as f32,
+                offset_y,
+                offset_x + sq_size * i as f32,
+                screen_height() - offset_y,
+                2.,
+                LIGHTGRAY,
+            );
+        }
+
+        draw_rectangle(
+            offset_x + 0. * sq_size,
+            offset_y + 0. * sq_size,
+            sq_size,
+            sq_size,
+            DARKGREEN,
+        );
+
         if is_mouse_button_down(MouseButton::Left) {
             let (mouse_x, mouse_y) = mouse_position();
             draw_circle(mouse_x, mouse_y, 5.0, BLUE);
         }
 
-        draw_line(40.0, 40.0, 100.0, 200.0, 15.0, BLUE);
-        draw_rectangle(screen_width() / 2.0 - 60.0, 100.0, 120.0, 60.0, GREEN);
-        draw_circle(screen_width() - 30.0, screen_height() - 30.0, 15.0, YELLOW);
-
-        draw_text("IT WORKS!", 20.0, 20.0, 30.0, DARKGRAY);
-
-        draw_text("touch the screen!", 20.0, 20.0, 20.0, DARKGRAY);
-        println!("hola");
         next_frame().await
     }
 }
