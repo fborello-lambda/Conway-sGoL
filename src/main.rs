@@ -34,14 +34,25 @@ async fn main() {
     loop {
         clear_background(LIGHTGRAY);
 
-        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 10.), "START") {
+        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 10.), "START")
+            || is_key_pressed(KeyCode::Space)
+            || is_key_pressed(KeyCode::S)
+        {
             running = !running;
         }
-        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 40.), "RESET") {
+        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 40.), "RESET")
+            || is_key_pressed(KeyCode::R)
+        {
             // reset grid state
             running = false;
             clicked = false;
             game = Grid::new(SQUARES_X, SQUARES_Y);
+        }
+
+        if running {
+            draw_text("Runnning...", 10., 25., 30.0, RED);
+        } else {
+            draw_text("Not Runnning...", 10., 25., 30.0, RED);
         }
 
         //Window settings
