@@ -1,10 +1,14 @@
 pub mod logic;
 
+use logic::Grid;
 use macroquad::prelude::*;
+use macroquad::ui;
+use std::{thread, time::Duration, time::Instant};
+
 fn window_conf() -> Conf {
     Conf {
         window_title: "Window Conf".to_owned(),
-        window_width: 1368,
+        window_width: 768,
         window_height: 768,
         fullscreen: false,
         #[cfg(feature = "metal")]
@@ -16,23 +20,107 @@ fn window_conf() -> Conf {
     }
 }
 
+const SQUARES_X: usize = 50;
+const SQUARES_Y: usize = 25;
+
 #[macroquad::main(window_conf)]
 async fn main() {
+    let mut running: bool = false;
+    let mut game = Grid::new(SQUARES_X, SQUARES_Y);
+    let mut sq_size;
+    let mut now = Instant::now();
+    let mut clicked: bool = false;
+    let mut click = Instant::now();
     loop {
         clear_background(LIGHTGRAY);
-        if is_mouse_button_down(MouseButton::Left) {
-            let (mouse_x, mouse_y) = mouse_position();
-            draw_circle(mouse_x, mouse_y, 5.0, BLUE);
+
+        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 10.), "START") {
+            running = !running;
+        }
+        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 40.), "RESET") {
+            // reset grid state
+            running = false;
+            clicked = false;
+            game = Grid::new(SQUARES_X, SQUARES_Y);
         }
 
-        draw_line(40.0, 40.0, 100.0, 200.0, 15.0, BLUE);
-        draw_rectangle(screen_width() / 2.0 - 60.0, 100.0, 120.0, 60.0, GREEN);
-        draw_circle(screen_width() - 30.0, screen_height() - 30.0, 15.0, YELLOW);
+        //Window settings
 
-        draw_text("IT WORKS!", 20.0, 20.0, 30.0, DARKGRAY);
+        let a = (screen_width() - 20.) / SQUARES_X as f32;
+        let b = (screen_height() - 60.) / SQUARES_Y as f32;
+        sq_size = a.min(b);
 
-        draw_text("touch the screen!", 20.0, 20.0, 20.0, DARKGRAY);
-        println!("hola");
+        let offset_x = (screen_width() - 20. - sq_size * SQUARES_X as f32) / 2. + 10.;
+        let offset_y_up = (screen_height() - 60. - sq_size * SQUARES_Y as f32) / 2. + 50.;
+        let offset_y_down = (screen_height() - 60. - sq_size * SQUARES_Y as f32) / 2. + 10.;
+
+        //Draw background
+        draw_rectangle(
+            offset_x,
+            offset_y_up,
+            screen_width() - offset_x * 2.,
+            screen_height() - offset_y_down - offset_y_up,
+            WHITE,
+        );
+
+        for x in 0..game.width {
+            for y in 0..game.height {
+                draw_rectangle(
+                    offset_x + (x as f32) * sq_size,
+                    offset_y_up + (y as f32) * sq_size,
+                    sq_size,
+                    sq_size,
+                    {
+                        if game.grid[y][x].alive {
+                            DARKGREEN
+                        } else {
+                            WHITE
+                        }
+                    },
+                );
+            }
+        }
+
+        for i in 1..SQUARES_Y {
+            draw_line(
+                offset_x,
+                offset_y_up + sq_size * i as f32,
+                screen_width() - offset_x,
+                offset_y_up + sq_size * i as f32,
+                2.,
+                LIGHTGRAY,
+            );
+        }
+        for i in 1..SQUARES_X {
+            draw_line(
+                offset_x + sq_size * i as f32,
+                offset_y_up,
+                offset_x + sq_size * i as f32,
+                screen_height() - offset_y_down,
+                2.,
+                LIGHTGRAY,
+            );
+        }
+
+        if is_mouse_button_down(MouseButton::Left) && !clicked {
+            let (mouse_x, mouse_y) = mouse_position();
+            if mouse_x > offset_x && mouse_y > offset_y_up {
+                let y = ((mouse_y - offset_y_up) / sq_size).floor() as usize;
+                let x = ((mouse_x - offset_x) / sq_size).floor() as usize;
+                game.change_cell(y, x);
+            }
+            clicked = true;
+            click = Instant::now();
+        }
+        if clicked && (click.elapsed().as_millis() > 150) {
+            clicked = false;
+        }
+
+        if running && now.elapsed().as_millis() > 500 {
+            game.update();
+            now = Instant::now();
+        }
+
         next_frame().await
     }
 }
