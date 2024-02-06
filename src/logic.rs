@@ -4,11 +4,16 @@ pub struct Cell {
     pub alive: bool,
     live_neighb: u8,
 }
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct Grid {
     pub width: usize,
     pub height: usize,
     pub grid: Vec<Vec<Cell>>,
+}
+
+pub enum Error {
+    Conversion,
 }
 
 impl Grid {
@@ -69,14 +74,14 @@ impl Grid {
         self
     }
 
-    fn neighbours(&self, i: i32, j: i32) -> Vec<(usize, usize)> {
+    fn neighbours(&self, i: i32, j: i32) -> Result<Vec<(usize, usize)>, Error> {
         let mut res = Vec::new();
         for (k, l) in itertools::iproduct!(0..=2_i32, 0..=2_i32) {
             let x: i32 = (i + k) - 1;
             let y: i32 = (j + l) - 1;
             if x >= 0
                 && x < i32::try_from(self.height).unwrap()
-                && y < self.width.try_into().unwrap()
+                && y < i32::try_from(self.width).unwrap()
                 && y >= 0
                 && (k != 1 || l != 1)
             {
