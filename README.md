@@ -7,7 +7,7 @@ Conway's Game of Life written in Rust using the crate MacroQuad with WASM.
 ## Why?
 
 This is a simple project that is used as a Rust+WASM playground.
-Collaborative workflow using git is also put in practice.
+Collaborative workflow using git is also put into practice.
 
 ## How?
 
