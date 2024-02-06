@@ -74,7 +74,7 @@ impl Grid {
         self
     }
 
-    fn neighbours(&self, i: i32, j: i32) -> Result<Vec<(usize, usize)>, Error> {
+    fn neighbours(&self, i: i32, j: i32) -> Vec<(usize, usize)> {
         let mut res = Vec::new();
         for (k, l) in itertools::iproduct!(0..=2_i32, 0..=2_i32) {
             let x: i32 = (i + k) - 1;
