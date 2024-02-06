@@ -121,9 +121,6 @@ mod tests {
     use super::Grid;
 
     #[test]
-    fn test_show() {}
-
-    #[test]
     fn test_neigh() {
         let g = Grid::new(5, 5);
         assert_eq!(g.neighbours(4, 4), vec![(3, 3), (3, 4), (4, 3)]);

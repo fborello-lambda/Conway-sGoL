@@ -1,6 +1,9 @@
 build:
 	cargo build --release
 
+run:
+	cargo run
+
 build-wasm:
 	cargo build --target wasm32-unknown-unknown --release
 
@@ -10,9 +13,9 @@ cp-wasm:
 server:
 	basic-http-server www
 
-all: build
+all: build build-wasm
 
 wasm: build-wasm cp-wasm server
 
-test: check-deps
+test:
 	cargo test --workspace --all-targets --all-features

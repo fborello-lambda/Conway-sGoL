@@ -2,54 +2,34 @@ pub mod logic;
 
 use logic::Grid;
 use macroquad::prelude::*;
-use macroquad::ui;
-use std::time::Instant;
 
 fn window_conf() -> Conf {
     Conf {
         window_title: "Window Conf".to_owned(),
-        window_width: 600,
+        window_width: 800,
         window_height: 600,
         ..Default::default()
     }
 }
+const SQUARES_X: usize = 50;
+const SQUARES_Y: usize = 25;
 
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut running: bool = false;
-    let mut SQUARES_X: usize = 50;
-    let mut SQUARES_Y: usize = 25;
     let mut game = Grid::new(SQUARES_X, SQUARES_Y);
     let mut sq_size;
-    let mut now = Instant::now();
+    let mut now = get_time();
     let mut clicked: bool = false;
-    let mut click = Instant::now();
+    let mut click = get_time();
 
     loop {
         clear_background(LIGHTGRAY);
 
-        /*if is_key_pressed(KeyCode::Up) {
-            SQUARES_Y += 1;
-        }
-        if is_key_pressed(KeyCode::Down) {
-            SQUARES_Y -= 1;
-        }
-        if is_key_pressed(KeyCode::Right) {
-            SQUARES_X += 1;
-        }
-        if is_key_pressed(KeyCode::Left) {
-            SQUARES_X -= 1;
-        }
-        */
-        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 10.), "START")
-            || is_key_pressed(KeyCode::Space)
-            || is_key_pressed(KeyCode::S)
-        {
+        if is_key_pressed(KeyCode::Space) || is_key_pressed(KeyCode::S) {
             running = !running;
         }
-        if ui::root_ui().button(vec2(screen_width() / 2.0 - 35., 30.), "RESET")
-            || is_key_pressed(KeyCode::R)
-        {
+        if is_key_pressed(KeyCode::R) {
             // reset grid state
             running = false;
             clicked = false;
@@ -57,10 +37,12 @@ async fn main() {
         }
 
         if running {
-            draw_text("Runnning...", 10., 25., 30.0, RED);
+            draw_text("Running...", 10., 100., 128.0, RED);
         } else {
-            draw_text("Not Runnning...", 10., 25., 30.0, RED);
+            draw_text("Not Running...", 10., 100., 128.0, RED);
         }
+        draw_text("S or Space to Start/Stop", 1000., 100., 128.0, BLACK);
+        draw_text("R to Reset", 2800., 100., 128.0, BLACK);
 
         //Window settings
 
@@ -128,15 +110,15 @@ async fn main() {
                 game.change_cell(y, x);
             }
             clicked = true;
-            click = Instant::now();
+            click = get_time();
         }
-        if clicked && (click.elapsed().as_millis() > 150) {
+        if clicked && (get_time() - click > 0.15) {
             clicked = false;
         }
 
-        if running && now.elapsed().as_millis() > 500 {
+        if running && (get_time() - now > 0.5) {
             game.update();
-            now = Instant::now();
+            now = get_time();
         }
 
         next_frame().await
