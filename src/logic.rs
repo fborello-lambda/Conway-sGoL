@@ -1,3 +1,4 @@
+use itertools;
 #[derive(Clone, PartialEq, Debug)]
 pub struct Cell {
     pub alive: bool,
@@ -27,16 +28,14 @@ impl Grid {
     }
 
     pub fn update_neighbours(&mut self) -> &Self {
-        for i in 0..self.height {
-            for j in 0..self.width {
-                let mut cant = 0;
-                for (x, y) in self.neighbours(i as u32, j as u32) {
-                    if self.grid[x][y].alive {
-                        cant += 1;
-                    }
+        for (i, j) in itertools::iproduct!(0..self.height, 0..self.width) {
+            let mut cant = 0;
+            for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
+                if self.grid[x][y].alive {
+                    cant += 1;
                 }
-                self.grid[i][j].live_neighb = cant;
             }
+            self.grid[i][j].live_neighb = cant;
         }
         self
     }
@@ -44,7 +43,7 @@ impl Grid {
     fn new_cell(&mut self, i: usize, j: usize) -> &Self {
         if !self.grid[i][j].alive {
             self.grid[i][j].alive = true;
-            for (x, y) in self.neighbours(i as u32, j as u32) {
+            for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
                 self.grid[x][y].live_neighb += 1;
             }
         }
@@ -54,7 +53,7 @@ impl Grid {
     fn kill_cell(&mut self, i: usize, j: usize) -> &Self {
         if self.grid[i][j].alive {
             self.grid[i][j].alive = false;
-            for (x, y) in self.neighbours(i as u32, j as u32) {
+            for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
                 self.grid[x][y].live_neighb -= 1;
             }
         }
@@ -70,20 +69,21 @@ impl Grid {
         self
     }
 
-    fn neighbours(&self, i: u32, j: u32) -> Vec<(usize, usize)> {
+    fn neighbours(&self, i: i32, j: i32) -> Vec<(usize, usize)> {
         let mut res = Vec::new();
-        for k in 0..=2_u32 {
-            for l in 0..=2_u32 {
-                let x: i32 = ((i + k) - 1).try_into().unwrap();
-                let y: i32 = ((j + l) - 1).try_into().unwrap();
-                if x >= 0
-                    && x < self.height.try_into().unwrap()
-                    && y < self.width.try_into().unwrap()
-                    && y >= 0
-                    && (k != 1 || l != 1)
-                {
-                    res.push(((i + k - 1) as usize, (j + l - 1) as usize));
-                }
+        for (k, l) in itertools::iproduct!(0..=2_i32, 0..=2_i32) {
+            let x: i32 = (i + k) - 1;
+            let y: i32 = (j + l) - 1;
+            if x >= 0
+                && x < i32::try_from(self.height).unwrap()
+                && y < self.width.try_into().unwrap()
+                && y >= 0
+                && (k != 1 || l != 1)
+            {
+                res.push((
+                    usize::try_from(i + k - 1).unwrap(),
+                    usize::try_from(j + l - 1).unwrap(),
+                ));
             }
         }
         res
@@ -109,7 +109,7 @@ impl Grid {
         Grid {
             width,
             height,
-            grid: vec![vec![deadcell; width.into()]; height.into()],
+            grid: vec![vec![deadcell; width]; height],
         }
     }
 }

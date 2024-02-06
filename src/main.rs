@@ -113,11 +113,13 @@ async fn main() {
             clicked = true;
             click = get_time();
         }
-        if clicked && (get_time() - click > 0.15) {
+
+        let current_time = get_time();
+        if clicked && (current_time - click > 0.15) {
             clicked = false;
         }
 
-        if running && (get_time() - now > 0.5) {
+        if running && (current_time - now > 0.5) {
             game.update();
             now = get_time();
         }
