@@ -3,19 +3,13 @@ pub mod logic;
 use logic::Grid;
 use macroquad::prelude::*;
 use macroquad::ui;
-use std::{thread, time::Duration, time::Instant};
+use std::time::Instant;
 
 fn window_conf() -> Conf {
     Conf {
         window_title: "Window Conf".to_owned(),
-        window_width: 768,
-        window_height: 768,
-        fullscreen: false,
-        #[cfg(feature = "metal")]
-        platform: miniquad::conf::Platform {
-            apple_gfx_api: miniquad::conf::AppleGfxApi::Metal,
-            ..Default::default()
-        },
+        window_width: 600,
+        window_height: 600,
         ..Default::default()
     }
 }
