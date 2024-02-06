@@ -1,29 +1,18 @@
-prog := CONWAY-SGOL
-
-debug ?=
-
-$(info debug is $(debug))
-
-ifdef debug
-  release :=
-  target :=debug
-  extension :=debug
-else
-  release :=--release
-  target :=release
-  extension :=
-endif
-
 build:
-	cargo build $(release)
+	cargo build --release
 
-install:
-	cp target/$(target)/$(prog) ~/bin/$(prog)-$(extension)
+build-wasm:
+	cargo build --target wasm32-unknown-unknown --release
 
-all: build install
- 
+cp-wasm:
+	cp target/wasm32-unknown-unknown/release/conways_gol.wasm www/
+
+server:
+	basic-http-server www
+
+all: build
+
+wasm: build-wasm cp-wasm server
+
 test: check-deps
 	cargo test --workspace --all-targets --all-features
-  
-help:
-	@echo "usage: make $(prog) [debug=1]"
