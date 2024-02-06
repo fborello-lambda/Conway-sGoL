@@ -1,3 +1,4 @@
+#[warn(clippy::as_conversions)]
 pub mod logic;
 
 use logic::Grid;
@@ -11,13 +12,13 @@ fn window_conf() -> Conf {
         ..Default::default()
     }
 }
-const SQUARES_X: usize = 50;
-const SQUARES_Y: usize = 25;
+const SQUARES_X: u8 = 50;
+const SQUARES_Y: u8 = 25;
 
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut running: bool = false;
-    let mut game = Grid::new(SQUARES_X, SQUARES_Y);
+    let mut game = Grid::new(SQUARES_X as usize, SQUARES_Y as usize);
     let mut sq_size;
     let mut now = get_time();
     let mut clicked: bool = false;
@@ -33,7 +34,7 @@ async fn main() {
             // reset grid state
             running = false;
             clicked = false;
-            game = Grid::new(SQUARES_X, SQUARES_Y);
+            game = Grid::new(SQUARES_X as usize, SQUARES_Y as usize);
         }
 
         if running {
