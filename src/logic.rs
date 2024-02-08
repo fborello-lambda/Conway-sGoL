@@ -17,11 +17,10 @@ pub enum Error {
 }
 
 impl Grid {
-    pub fn update(&mut self) -> &Self {
+    pub fn update(&mut self) {
         for i in 0..self.height {
             for j in 0..self.width {
                 match self.grid[i][j].live_neighb {
-                    0 | 1 => self.grid[i][j].alive = false,
                     2 => {}
                     3 => self.grid[i][j].alive = true,
                     _ => self.grid[i][j].alive = false,
@@ -29,49 +28,40 @@ impl Grid {
             }
         }
         self.update_neighbours();
-        self
     }
 
-    pub fn update_neighbours(&mut self) -> &Self {
+    pub fn update_neighbours(&mut self) {
         for (i, j) in itertools::iproduct!(0..self.height, 0..self.width) {
-            let mut cant = 0;
+            let mut quant = 0;
             for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
                 if self.grid[x][y].alive {
-                    cant += 1;
+                    quant += 1;
                 }
             }
-            self.grid[i][j].live_neighb = cant;
+            self.grid[i][j].live_neighb = quant;
         }
-        self
     }
 
-    fn new_cell(&mut self, i: usize, j: usize) -> &Self {
-        if !self.grid[i][j].alive {
-            self.grid[i][j].alive = true;
-            for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
-                self.grid[x][y].live_neighb += 1;
-            }
+    fn new_cell(&mut self, i: usize, j: usize) {
+        self.grid[i][j].alive = true;
+        for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
+            self.grid[x][y].live_neighb += 1;
         }
-        self
     }
 
-    fn kill_cell(&mut self, i: usize, j: usize) -> &Self {
-        if self.grid[i][j].alive {
-            self.grid[i][j].alive = false;
-            for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
-                self.grid[x][y].live_neighb -= 1;
-            }
+    fn kill_cell(&mut self, i: usize, j: usize) {
+        self.grid[i][j].alive = false;
+        for (x, y) in self.neighbours(i.try_into().unwrap(), j.try_into().unwrap()) {
+            self.grid[x][y].live_neighb -= 1;
         }
-        self
     }
 
-    pub fn change_cell(&mut self, i: usize, j: usize) -> &Self {
+    pub fn change_cell(&mut self, i: usize, j: usize) {
         if self.grid[i][j].alive {
             self.kill_cell(i, j);
-            return self;
+        } else {
+            self.new_cell(i, j);
         }
-        self.new_cell(i, j);
-        self
     }
 
     fn neighbours(&self, i: i32, j: i32) -> Vec<(usize, usize)> {
